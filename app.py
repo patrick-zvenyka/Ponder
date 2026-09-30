@@ -46,8 +46,13 @@ with app.app_context():
 
 @app.route('/')
 def index():
-    posts = Post.query.order_by(Post.id.desc()).all()
-    return render_template('index.html', posts=posts, node=NODE_ID)
+    page = request.args.get('page', 1, type=int)
+    pagination = Post.query.order_by(Post.id.desc()).paginate(
+        page=page, per_page=4, error_out=False
+    )
+    return render_template(
+        'index.html', posts=pagination.items, pagination=pagination, node=NODE_ID
+    )
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -95,7 +100,8 @@ def vote(post_id):
     elif action == 'dislike':
         post.dislikes += 1
     db.session.commit()
-    return redirect(url_for('index'))
+    page = request.form.get('page', 1, type=int)
+    return redirect(url_for('index', page=page))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
