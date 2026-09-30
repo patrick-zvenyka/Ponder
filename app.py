@@ -5,7 +5,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='assets', static_url_path='/assets')
 # Secret key needed to sign session cookies
 app.secret_key = os.urandom(24)
 
